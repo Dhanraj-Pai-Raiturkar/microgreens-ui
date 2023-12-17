@@ -1,16 +1,31 @@
-import React from "react";
-import { Grid } from "@mui/material";
-import Section from "./components/layouts/Section";
+import React, { useState } from 'react'
+import { Grid } from '@mui/material'
+import SignUp from './components/SignUp'
+import SignIn from './components/SignIn'
 
 function App(): React.ReactElement {
-  const arr = ["1", "2", "3", "4", "5", "6"];
+  const [showSignup, setShowSignup] = useState<Boolean>(false)
   return (
-    <Grid>
-      {arr.map((item: string, index: number) => (
-          <Section isOdd={index % 2 === 0}>{item}</Section>
-      ))}
+    <Grid
+      width={'100vw'}
+      height={'100vh'}
+      display={'flex'}
+      flexDirection={'column'}
+      justifyContent={'center'}
+      alignItems={'center'}
+      sx={theme => {
+        return {
+          backgroundColor: theme?.custom?.background?.primary?.light
+        }
+      }}
+    >
+      {showSignup ? (
+        <SignUp toggleSignup={setShowSignup} />
+      ) : (
+        <SignIn toggleSignup={setShowSignup} />
+      )}
     </Grid>
-  );
+  )
 }
 
-export default App;
+export default App
