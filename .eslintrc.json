@@ -54,7 +54,8 @@
         "ignoreRestSiblings": true
       }
     ],
-    "@typescript-eslint/no-unused-prop-types": "off"
+    "@typescript-eslint/no-unused-prop-types": "off",
+    "@typescript-eslint/no-extraneous-dependencies": "off"
   },
   "settings": {
     "import/resolver": {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Grid } from '@mui/material'
-import SignUp from './components/SignUp'
-import SignIn from './components/SignIn'
+import SignUp from './components/login/SignUp'
+import SignIn from './components/login/SignIn'
 
 function App(): React.ReactElement {
   const [showSignup, setShowSignup] = useState<Boolean>(false)

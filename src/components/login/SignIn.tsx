@@ -8,6 +8,13 @@ import {
   TextField
 } from '@mui/material'
 import React from 'react'
+import {
+  CardContentStyles,
+  CardStyles,
+  SignUpButtonStyles,
+  TextFieldStyles,
+  ToggleButtonStyles
+} from './styles'
 
 interface SignUpProps {
   toggleSignup: Function
@@ -23,12 +30,7 @@ const SignIn: React.FC<SignUpProps> = props => {
       alignItems={'center'}
       justifyContent={'center'}
     >
-      <Card
-        sx={{
-          width: { xs: '80%', sm: '40%', md: '30%', lg: '20%', xl: '10%' },
-          borderRadius: 2
-        }}
-      >
+      <Card sx={CardStyles}>
         <CardMedia
           image={'/login_banner.png'}
           sx={{
@@ -37,23 +39,23 @@ const SignIn: React.FC<SignUpProps> = props => {
             backgroundPosition: 'center'
           }}
         />
-        <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
+        <CardContent sx={CardContentStyles}>
           <FormControl>
             <TextField
               size="small"
               variant="standard"
               type="email"
               placeholder="Email"
-              sx={{ mb: '1rem' }}
+              sx={TextFieldStyles}
             />
             <TextField
               size="small"
               variant="standard"
               type="password"
               placeholder="Password"
-              sx={{ mb: '1rem' }}
+              sx={TextFieldStyles}
             />
-            <Button sx={{ my: '1rem' }} size="small" variant="contained">
+            <Button sx={SignUpButtonStyles} size="small" variant="contained">
               Login
             </Button>
           </FormControl>
@@ -63,13 +65,7 @@ const SignIn: React.FC<SignUpProps> = props => {
         onClick={() => toggleSignup((prev: Boolean) => !prev)}
         variant="text"
         disableTouchRipple
-        sx={{
-          width: '100%',
-          fontSize: '0.6rem',
-          '&:hover': {
-            background: 'none'
-          }
-        }}
+        sx={ToggleButtonStyles}
       >
         {
           <>
