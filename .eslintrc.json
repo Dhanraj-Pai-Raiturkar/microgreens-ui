@@ -39,6 +39,7 @@
       }
     ],
     "no-shadow": "off",
+    "no-console": "off",
     "@typescript-eslint/no-shadow": ["error"],
     "comma-dangle": ["error", "never"],
     "@typescript-eslint/explicit-function-return-type": [

@@ -21,7 +21,7 @@ import {
   TextFieldStyles,
   ToggleButtonStyles
 } from './styles'
-import useSignUp, { SignUpRequestBody } from '../../hooks/login/UseSignup'
+import useSignUp, { SignUpRequestBody } from '../../hooks/login/useSignup'
 
 interface SignUpProps {
   toggleSignup: Function
@@ -46,6 +46,7 @@ const SignUp: React.FC<SignUpProps> = props => {
     password: '',
     confirmPassword: ''
   })
+  const { signUp } = useSignUp()
 
   const updateFormInput: (key: string, value: string) => void = (
     key: string,
@@ -68,7 +69,8 @@ const SignUp: React.FC<SignUpProps> = props => {
         gender: signupForm?.gender,
         password: signupForm?.password
       }
-      await useSignUp(payload)
+      await signUp(payload)
+      console.log(payload)
     } catch (error) {
       console.error('handleSignUp error', error)
     }
