@@ -22,19 +22,7 @@ import {
   ToggleButtonStyles
 } from './styles'
 import useSignUp, { SignUpRequestBody } from '../../hooks/login/useSignup'
-
-interface SignUpProps {
-  toggleSignup: Function
-}
-
-interface SignUpForm {
-  firstname: string
-  lastname: string
-  email: string
-  gender: string
-  password: string
-  confirmPassword: string
-}
+import { SignUpForm, SignUpProps } from './loginInterfaces'
 
 const SignUp: React.FC<SignUpProps> = props => {
   const { toggleSignup } = props
@@ -46,7 +34,9 @@ const SignUp: React.FC<SignUpProps> = props => {
     password: '',
     confirmPassword: ''
   })
-  const { signUp } = useSignUp()
+  const { signUp, validate, validationState } = useSignUp()
+
+  console.log(validationState)
 
   const updateFormInput: (key: string, value: string) => void = (
     key: string,
@@ -58,6 +48,43 @@ const SignUp: React.FC<SignUpProps> = props => {
         [key]: value
       }
     })
+  }
+
+  const handleFirstnameChange = (e: SyntheticEvent, key: string): void => {
+    const firstname: string = (e.target as HTMLInputElement).value
+    updateFormInput(key, firstname)
+    validate(key, firstname, 'min 2 characters')
+  }
+
+  const handleLastnameChange = (e: SyntheticEvent, key: string): void => {
+    const lastname: string = (e.target as HTMLInputElement).value
+    updateFormInput(key, lastname)
+    validate(key, lastname, 'please provide a firstname')
+  }
+
+  const handleEmailChange = (e: SyntheticEvent, key: string): void => {
+    const email: string = (e.target as HTMLInputElement).value
+    updateFormInput(key, email)
+    validate(key, email, 'please provide a firstname')
+  }
+
+  const handleGenderChange = (e: SyntheticEvent, key: string): void => {
+    const gender: string = (e.target as HTMLInputElement).value
+    updateFormInput(key, gender)
+  }
+
+  const handlePasswordChange = (e: SyntheticEvent, key: string): void => {
+    const password: string = (e.target as HTMLInputElement).value
+    updateFormInput(key, password)
+  }
+
+  const handleConfirmPasswordChange = (
+    e: SyntheticEvent,
+    key: string
+  ): void => {
+    const confirmPassword: string = (e.target as HTMLInputElement).value
+    updateFormInput(key, confirmPassword)
+    validate(key, confirmPassword, 'please provide a firstname')
   }
 
   const handleSignUp: () => Promise<void> = async () => {
@@ -94,10 +121,16 @@ const SignUp: React.FC<SignUpProps> = props => {
               placeholder="First Name"
               sx={TextFieldStyles}
               onChange={(e: SyntheticEvent) =>
-                updateFormInput(
-                  'firstname',
-                  (e.target as HTMLInputElement).value
-                )
+                handleFirstnameChange(e, 'firstname')
+              }
+              onBlur={(e: SyntheticEvent) =>
+                handleFirstnameChange(e, 'firstname')
+              }
+              error={validationState.firstname.error}
+              helperText={
+                validationState.firstname.error
+                  ? validationState.firstname.message
+                  : ''
               }
             />
             <TextField
@@ -106,10 +139,16 @@ const SignUp: React.FC<SignUpProps> = props => {
               placeholder="Last Name"
               sx={TextFieldStyles}
               onChange={(e: SyntheticEvent) =>
-                updateFormInput(
-                  'lastname',
-                  (e.target as HTMLInputElement).value
-                )
+                handleLastnameChange(e, 'lastname')
+              }
+              onBlur={(e: SyntheticEvent) =>
+                handleLastnameChange(e, 'lastname')
+              }
+              error={validationState.lastname.error}
+              helperText={
+                validationState.lastname.error
+                  ? validationState.lastname.message
+                  : ''
               }
             />
             <TextField
@@ -118,8 +157,11 @@ const SignUp: React.FC<SignUpProps> = props => {
               type="email"
               placeholder="Email"
               sx={TextFieldStyles}
-              onChange={(e: SyntheticEvent) =>
-                updateFormInput('email', (e.target as HTMLInputElement).value)
+              onChange={(e: SyntheticEvent) => handleEmailChange(e, 'email')}
+              onBlur={(e: SyntheticEvent) => handleEmailChange(e, 'email')}
+              error={validationState.email.error}
+              helperText={
+                validationState.email.error ? validationState.email.message : ''
               }
             />
             <RadioGroup
@@ -127,9 +169,7 @@ const SignUp: React.FC<SignUpProps> = props => {
               aria-labelledby="demo-radio-buttons-group-label"
               defaultValue="Male"
               name="radio-buttons-group"
-              onChange={(e: SyntheticEvent) =>
-                updateFormInput('gender', (e.target as HTMLInputElement).value)
-              }
+              onChange={(e: SyntheticEvent) => handleGenderChange(e, 'gender')}
             >
               <FormControlLabel
                 value="Male"
@@ -149,10 +189,16 @@ const SignUp: React.FC<SignUpProps> = props => {
               placeholder="Password"
               sx={TextFieldStyles}
               onChange={(e: SyntheticEvent) =>
-                updateFormInput(
-                  'password',
-                  (e.target as HTMLInputElement).value
-                )
+                handlePasswordChange(e, 'password')
+              }
+              onBlur={(e: SyntheticEvent) =>
+                handlePasswordChange(e, 'password')
+              }
+              error={validationState.password.error}
+              helperText={
+                validationState.password.error
+                  ? validationState.password.message
+                  : ''
               }
             />
             <TextField
@@ -162,10 +208,10 @@ const SignUp: React.FC<SignUpProps> = props => {
               placeholder="Confirm Password"
               sx={TextFieldStyles}
               onChange={(e: SyntheticEvent) =>
-                updateFormInput(
-                  'confirmPassword',
-                  (e.target as HTMLInputElement).value
-                )
+                handleConfirmPasswordChange(e, 'confirmPassword')
+              }
+              onBlur={(e: SyntheticEvent) =>
+                handleConfirmPasswordChange(e, 'confirmPassword')
               }
             />
             <Button
