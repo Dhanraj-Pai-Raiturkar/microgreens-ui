@@ -40,6 +40,8 @@
     ],
     "no-shadow": "off",
     "no-console": "off",
+    "react/no-unstable-nested-components": "off",
+    "react/jsx-porps-no-spreading": "off",
     "@typescript-eslint/no-shadow": ["error"],
     "comma-dangle": ["error", "never"],
     "@typescript-eslint/explicit-function-return-type": [

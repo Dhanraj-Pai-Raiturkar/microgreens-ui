@@ -13,6 +13,6 @@ export interface SignUpForm {
 
 export interface formValidationType {
   error: boolean
-  validationRegex: RegExp
+  validationRegex: RegExp | Function
   message: string
 }

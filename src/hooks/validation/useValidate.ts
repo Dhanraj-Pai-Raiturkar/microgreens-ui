@@ -2,8 +2,14 @@ import { useState } from 'react'
 import { formValidationType } from '../../components/login/loginInterfaces'
 
 export type validationStateType = { [key: string]: formValidationType }
-export type validateType = (key: string, value: string, message: string) => void
-export type fieldsType = Record<string, RegExp>
+export type validateType = (
+  key: string,
+  value: string,
+  message: string,
+  password?: string,
+  confirmPassword?: string
+) => void
+export type fieldsType = Record<string, RegExp | Function>
 type useValidateType = {
   validate: validateType
   validationState: validationStateType
@@ -22,8 +28,18 @@ const useValidate = (fields: fieldsType): useValidateType => {
   )
   const [validationState, setValidationState] =
     useState<validationStateType>(initialState)
-  const validate = (key: string, value: string, message: string): void => {
-    const isError: boolean = !validationState[key].validationRegex.test(value)
+  const validate = (
+    key: string,
+    value: string,
+    message: string,
+    password?: string,
+    confirmPassword?: string
+  ): void => {
+    const validator = validationState[key].validationRegex
+    let isError: boolean
+    if (validator instanceof Function)
+      isError = !validator(password, confirmPassword)
+    else isError = !validator.test(value)
     if (isError) {
       setValidationState((prev: any) => {
         return {
@@ -40,7 +56,6 @@ const useValidate = (fields: fieldsType): useValidateType => {
       })
     }
   }
-  //   console.log(validate)
   return { validate, validationState }
 }
 

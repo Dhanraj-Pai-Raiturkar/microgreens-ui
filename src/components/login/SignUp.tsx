@@ -11,7 +11,8 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import React, { SyntheticEvent, useState } from 'react'
+import CircularProgress from '@mui/material/CircularProgress'
+import React, { SyntheticEvent, useEffect, useState } from 'react'
 import {
   CardContentStyles,
   CardMediaStyles,
@@ -23,9 +24,12 @@ import {
 } from './styles'
 import useSignUp, { SignUpRequestBody } from '../../hooks/login/useSignup'
 import { SignUpForm, SignUpProps } from './loginInterfaces'
+import VerifyEmail from './VerifyEmail'
 
 const SignUp: React.FC<SignUpProps> = props => {
   const { toggleSignup } = props
+  const [disableSubmite, setDisableSubmit] = useState(false)
+  const [showModal, setShowModal] = useState<boolean>(false)
   const [signupForm, setSignupForm] = useState<SignUpForm>({
     firstname: '',
     lastname: '',
@@ -34,9 +38,7 @@ const SignUp: React.FC<SignUpProps> = props => {
     password: '',
     confirmPassword: ''
   })
-  const { signUp, validate, validationState } = useSignUp()
-
-  console.log(validationState)
+  const { signUp, validate, validationState, signingUp } = useSignUp()
 
   const updateFormInput: (key: string, value: string) => void = (
     key: string,
@@ -59,13 +61,13 @@ const SignUp: React.FC<SignUpProps> = props => {
   const handleLastnameChange = (e: SyntheticEvent, key: string): void => {
     const lastname: string = (e.target as HTMLInputElement).value
     updateFormInput(key, lastname)
-    validate(key, lastname, 'please provide a firstname')
+    validate(key, lastname, 'min 1 character')
   }
 
   const handleEmailChange = (e: SyntheticEvent, key: string): void => {
     const email: string = (e.target as HTMLInputElement).value
     updateFormInput(key, email)
-    validate(key, email, 'please provide a firstname')
+    validate(key, email, 'please provide a valid email')
   }
 
   const handleGenderChange = (e: SyntheticEvent, key: string): void => {
@@ -76,6 +78,11 @@ const SignUp: React.FC<SignUpProps> = props => {
   const handlePasswordChange = (e: SyntheticEvent, key: string): void => {
     const password: string = (e.target as HTMLInputElement).value
     updateFormInput(key, password)
+    validate(
+      key,
+      password,
+      'min 8 characters,atleast 1 upppercase,atleast 1 special character'
+    )
   }
 
   const handleConfirmPasswordChange = (
@@ -84,24 +91,60 @@ const SignUp: React.FC<SignUpProps> = props => {
   ): void => {
     const confirmPassword: string = (e.target as HTMLInputElement).value
     updateFormInput(key, confirmPassword)
-    validate(key, confirmPassword, 'please provide a firstname')
+    validate(
+      key,
+      confirmPassword,
+      'password does not match',
+      signupForm?.password,
+      confirmPassword
+    )
   }
 
-  const handleSignUp: () => Promise<void> = async () => {
+  const handleDisableSignup = (): boolean => {
+    let disableButton: boolean = false
+    const emptyFields: number = Object.keys(signupForm).filter(
+      (key: string) => {
+        return (signupForm as any)[key].length === 0
+      }
+    ).length
+    Object.keys(validationState).forEach(field => {
+      if (validationState[field].error || emptyFields) disableButton = true
+    })
+    return disableButton
+  }
+
+  const handleSignUp: (e: SyntheticEvent) => Promise<void> = async (
+    e: SyntheticEvent
+  ) => {
     try {
-      console.log(signupForm)
+      e.preventDefault()
       const payload: SignUpRequestBody = {
         name: `${signupForm?.firstname?.trim()} ${signupForm?.lastname?.trim()}`,
         email: signupForm?.email,
         gender: signupForm?.gender,
         password: signupForm?.password
       }
-      await signUp(payload)
-      console.log(payload)
+      const response = await signUp(payload)
+      if (response?.status) setShowModal(true)
+      else setShowModal(false)
     } catch (error) {
       console.error('handleSignUp error', error)
     }
   }
+
+  const handleRedirectToLogin: () => void = () => {
+    toggleSignup((prev: boolean) => !prev)
+  }
+
+  useEffect(() => {
+    setDisableSubmit(handleDisableSignup())
+  }, [validationState])
+
+  // const handleEnter: () => void = (e: any) => {
+  //   console.log(e.key)
+  //   if (e.key === 'Enter') handleSignUp(e)
+  // }
+  // window.addEventListener('keyup', handleEnter)
 
   return (
     <Grid
@@ -111,118 +154,147 @@ const SignUp: React.FC<SignUpProps> = props => {
       alignItems={'center'}
       justifyContent={'center'}
     >
+      <VerifyEmail
+        login={handleRedirectToLogin}
+        showModal={showModal}
+        email={signupForm?.email}
+        toggleModal={setShowModal}
+      />
       <Card sx={CardStyles}>
         <CardMedia image={'/login_banner.png'} sx={CardMediaStyles} />
         <CardContent sx={CardContentStyles}>
-          <FormControl>
-            <TextField
-              size="small"
-              variant="standard"
-              placeholder="First Name"
-              sx={TextFieldStyles}
-              onChange={(e: SyntheticEvent) =>
-                handleFirstnameChange(e, 'firstname')
-              }
-              onBlur={(e: SyntheticEvent) =>
-                handleFirstnameChange(e, 'firstname')
-              }
-              error={validationState.firstname.error}
-              helperText={
-                validationState.firstname.error
-                  ? validationState.firstname.message
-                  : ''
-              }
-            />
-            <TextField
-              size="small"
-              variant="standard"
-              placeholder="Last Name"
-              sx={TextFieldStyles}
-              onChange={(e: SyntheticEvent) =>
-                handleLastnameChange(e, 'lastname')
-              }
-              onBlur={(e: SyntheticEvent) =>
-                handleLastnameChange(e, 'lastname')
-              }
-              error={validationState.lastname.error}
-              helperText={
-                validationState.lastname.error
-                  ? validationState.lastname.message
-                  : ''
-              }
-            />
-            <TextField
-              size="small"
-              variant="standard"
-              type="email"
-              placeholder="Email"
-              sx={TextFieldStyles}
-              onChange={(e: SyntheticEvent) => handleEmailChange(e, 'email')}
-              onBlur={(e: SyntheticEvent) => handleEmailChange(e, 'email')}
-              error={validationState.email.error}
-              helperText={
-                validationState.email.error ? validationState.email.message : ''
-              }
-            />
-            <RadioGroup
-              sx={RadioGroupStyles}
-              aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="Male"
-              name="radio-buttons-group"
-              onChange={(e: SyntheticEvent) => handleGenderChange(e, 'gender')}
-            >
-              <FormControlLabel
-                value="Male"
-                control={<Radio size="small" />}
-                label={<Typography>Male</Typography>}
+          <form style={{ width: '100%' }} onSubmit={e => handleSignUp(e)}>
+            <FormControl fullWidth>
+              <TextField
+                size="small"
+                variant="standard"
+                placeholder="First Name"
+                sx={TextFieldStyles}
+                onChange={(e: SyntheticEvent) =>
+                  handleFirstnameChange(e, 'firstname')
+                }
+                onBlur={(e: SyntheticEvent) =>
+                  handleFirstnameChange(e, 'firstname')
+                }
+                error={validationState.firstname.error}
+                helperText={
+                  validationState.firstname.error
+                    ? validationState.firstname.message
+                    : ''
+                }
               />
-              <FormControlLabel
-                value="Female"
-                control={<Radio size="small" />}
-                label={<Typography>Female</Typography>}
+              <TextField
+                size="small"
+                variant="standard"
+                placeholder="Last Name"
+                sx={TextFieldStyles}
+                onChange={(e: SyntheticEvent) =>
+                  handleLastnameChange(e, 'lastname')
+                }
+                onBlur={(e: SyntheticEvent) =>
+                  handleLastnameChange(e, 'lastname')
+                }
+                error={validationState.lastname.error}
+                helperText={
+                  validationState.lastname.error
+                    ? validationState.lastname.message
+                    : ''
+                }
               />
-            </RadioGroup>
-            <TextField
-              size="small"
-              variant="standard"
-              type="password"
-              placeholder="Password"
-              sx={TextFieldStyles}
-              onChange={(e: SyntheticEvent) =>
-                handlePasswordChange(e, 'password')
-              }
-              onBlur={(e: SyntheticEvent) =>
-                handlePasswordChange(e, 'password')
-              }
-              error={validationState.password.error}
-              helperText={
-                validationState.password.error
-                  ? validationState.password.message
-                  : ''
-              }
-            />
-            <TextField
-              size="small"
-              variant="standard"
-              type="password"
-              placeholder="Confirm Password"
-              sx={TextFieldStyles}
-              onChange={(e: SyntheticEvent) =>
-                handleConfirmPasswordChange(e, 'confirmPassword')
-              }
-              onBlur={(e: SyntheticEvent) =>
-                handleConfirmPasswordChange(e, 'confirmPassword')
-              }
-            />
-            <Button
-              sx={SignUpButtonStyles}
-              size="small"
-              variant="contained"
-              onClick={() => handleSignUp()}
-            >
-              Sign Up
-            </Button>
-          </FormControl>
+              <TextField
+                size="small"
+                variant="standard"
+                type="email"
+                placeholder="Email"
+                sx={TextFieldStyles}
+                onChange={(e: SyntheticEvent) => handleEmailChange(e, 'email')}
+                onBlur={(e: SyntheticEvent) => handleEmailChange(e, 'email')}
+                error={validationState.email.error}
+                helperText={
+                  validationState.email.error
+                    ? validationState.email.message
+                    : ''
+                }
+              />
+              <RadioGroup
+                sx={RadioGroupStyles}
+                aria-labelledby="demo-radio-buttons-group-label"
+                defaultValue="Male"
+                name="radio-buttons-group"
+                onChange={(e: SyntheticEvent) =>
+                  handleGenderChange(e, 'gender')
+                }
+              >
+                <FormControlLabel
+                  value="Male"
+                  control={<Radio size="small" />}
+                  label={<Typography>Male</Typography>}
+                />
+                <FormControlLabel
+                  value="Female"
+                  control={<Radio size="small" />}
+                  label={<Typography>Female</Typography>}
+                />
+              </RadioGroup>
+              <TextField
+                size="small"
+                variant="standard"
+                type="password"
+                placeholder="Password"
+                sx={TextFieldStyles}
+                onChange={(e: SyntheticEvent) =>
+                  handlePasswordChange(e, 'password')
+                }
+                onBlur={(e: SyntheticEvent) =>
+                  handlePasswordChange(e, 'password')
+                }
+                error={validationState.password.error}
+                helperText={
+                  validationState.password.error ? (
+                    <ul style={{ padding: 0, paddingLeft: '1rem' }}>
+                      {validationState.password.message
+                        .split(',')
+                        .map((lineitem: string) => (
+                          <li>{lineitem}</li>
+                        ))}
+                    </ul>
+                  ) : (
+                    ''
+                  )
+                }
+              />
+              {/* </Tooltip> */}
+              <TextField
+                size="small"
+                variant="standard"
+                type="password"
+                placeholder="Confirm Password"
+                sx={TextFieldStyles}
+                onChange={(e: SyntheticEvent) =>
+                  handleConfirmPasswordChange(e, 'confirmPassword')
+                }
+                error={validationState.confirmPassword.error}
+                helperText={
+                  validationState.confirmPassword.error
+                    ? validationState.confirmPassword.message
+                    : ''
+                }
+              />
+              <Button
+                type="submit"
+                sx={SignUpButtonStyles}
+                size="small"
+                variant="contained"
+                disabled={disableSubmite}
+              >
+                {!signingUp ? (
+                  'Sign Up'
+                ) : (
+                  <CircularProgress sx={{ color: 'white' }} size={'1.5rem'} />
+                )}
+              </Button>
+            </FormControl>
+          </form>
         </CardContent>
       </Card>
       <Button
