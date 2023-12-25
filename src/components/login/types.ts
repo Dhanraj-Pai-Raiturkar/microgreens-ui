@@ -16,3 +16,8 @@ export interface formValidationType {
   validationRegex: RegExp | Function
   message: string
 }
+
+export interface SignInProps {
+  email: string
+  password: string
+}

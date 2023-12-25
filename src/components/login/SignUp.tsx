@@ -22,13 +22,17 @@ import {
   TextFieldStyles,
   ToggleButtonStyles
 } from './styles'
-import useSignUp, { SignUpRequestBody } from '../../hooks/login/useSignup'
-import { SignUpForm, SignUpProps } from './loginInterfaces'
+import useSignUp from '../../hooks/login/useSignup'
+import { SignUpForm, SignUpProps } from './types'
 import VerifyEmail from './VerifyEmail'
+import { SignUpRequestBody } from '../../hooks/login/types'
+import updateFormInput from '../../utils/updateFormInput'
+import handleDisableSignup from '../../utils/disableSubmitForm'
+import useValidate from '../../hooks/validation/useValidate'
 
 const SignUp: React.FC<SignUpProps> = props => {
   const { toggleSignup } = props
-  const [disableSubmite, setDisableSubmit] = useState(false)
+  const [disableSubmit, setDisableSubmit] = useState(false)
   const [showModal, setShowModal] = useState<boolean>(false)
   const [signupForm, setSignupForm] = useState<SignUpForm>({
     firstname: '',
@@ -38,46 +42,43 @@ const SignUp: React.FC<SignUpProps> = props => {
     password: '',
     confirmPassword: ''
   })
-  const { signUp, validate, validationState, signingUp } = useSignUp()
-
-  const updateFormInput: (key: string, value: string) => void = (
-    key: string,
-    value: string
-  ) => {
-    setSignupForm((prev: SignUpForm) => {
-      return {
-        ...prev,
-        [key]: value
-      }
-    })
+  const validations: Record<string, RegExp | Function> = {
+    firstname: /^.{2,}$/,
+    lastname: /^.{1,}$/,
+    email: /^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/,
+    password: /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}[\]:;<>,.?~\\-]).{8,}$/,
+    confirmPassword: (password: string, confirmPassword: string) => {
+      return password === confirmPassword
+    }
   }
-
+  const { signUp, signingUp } = useSignUp()
+  const { validate, validationState } = useValidate(validations)
   const handleFirstnameChange = (e: SyntheticEvent, key: string): void => {
     const firstname: string = (e.target as HTMLInputElement).value
-    updateFormInput(key, firstname)
+    updateFormInput(key, firstname, setSignupForm)
     validate(key, firstname, 'min 2 characters')
   }
 
   const handleLastnameChange = (e: SyntheticEvent, key: string): void => {
     const lastname: string = (e.target as HTMLInputElement).value
-    updateFormInput(key, lastname)
+    updateFormInput(key, lastname, setSignupForm)
     validate(key, lastname, 'min 1 character')
   }
 
   const handleEmailChange = (e: SyntheticEvent, key: string): void => {
     const email: string = (e.target as HTMLInputElement).value
-    updateFormInput(key, email)
+    updateFormInput(key, email, setSignupForm)
     validate(key, email, 'please provide a valid email')
   }
 
   const handleGenderChange = (e: SyntheticEvent, key: string): void => {
     const gender: string = (e.target as HTMLInputElement).value
-    updateFormInput(key, gender)
+    updateFormInput(key, gender, setSignupForm)
   }
 
   const handlePasswordChange = (e: SyntheticEvent, key: string): void => {
     const password: string = (e.target as HTMLInputElement).value
-    updateFormInput(key, password)
+    updateFormInput(key, password, setSignupForm)
     validate(
       key,
       password,
@@ -90,7 +91,7 @@ const SignUp: React.FC<SignUpProps> = props => {
     key: string
   ): void => {
     const confirmPassword: string = (e.target as HTMLInputElement).value
-    updateFormInput(key, confirmPassword)
+    updateFormInput(key, confirmPassword, setSignupForm)
     validate(
       key,
       confirmPassword,
@@ -98,19 +99,6 @@ const SignUp: React.FC<SignUpProps> = props => {
       signupForm?.password,
       confirmPassword
     )
-  }
-
-  const handleDisableSignup = (): boolean => {
-    let disableButton: boolean = false
-    const emptyFields: number = Object.keys(signupForm).filter(
-      (key: string) => {
-        return (signupForm as any)[key].length === 0
-      }
-    ).length
-    Object.keys(validationState).forEach(field => {
-      if (validationState[field].error || emptyFields) disableButton = true
-    })
-    return disableButton
   }
 
   const handleSignUp: (e: SyntheticEvent) => Promise<void> = async (
@@ -137,14 +125,8 @@ const SignUp: React.FC<SignUpProps> = props => {
   }
 
   useEffect(() => {
-    setDisableSubmit(handleDisableSignup())
+    setDisableSubmit(handleDisableSignup(signupForm, validationState))
   }, [validationState])
-
-  // const handleEnter: () => void = (e: any) => {
-  //   console.log(e.key)
-  //   if (e.key === 'Enter') handleSignUp(e)
-  // }
-  // window.addEventListener('keyup', handleEnter)
 
   return (
     <Grid
@@ -263,7 +245,6 @@ const SignUp: React.FC<SignUpProps> = props => {
                   )
                 }
               />
-              {/* </Tooltip> */}
               <TextField
                 size="small"
                 variant="standard"
@@ -285,7 +266,7 @@ const SignUp: React.FC<SignUpProps> = props => {
                 sx={SignUpButtonStyles}
                 size="small"
                 variant="contained"
-                disabled={disableSubmite}
+                disabled={disableSubmit}
               >
                 {!signingUp ? (
                   'Sign Up'

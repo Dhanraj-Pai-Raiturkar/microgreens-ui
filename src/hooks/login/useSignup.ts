@@ -1,60 +1,26 @@
 import { useState } from 'react'
 import axiosInstance from '../../utils/axiosInstance'
-import useValidate, {
-  validateType,
-  validationStateType
-} from '../validation/useValidate'
-
-export interface SignUpRequestBody {
-  name: string
-  gender: string
-  email: string
-  password: string
-}
-
-type signUpType = (
-  data: SignUpRequestBody
-) => Promise<{ status: boolean; message: string }>
-type verifyEmailType = (
-  data: verifyEmail
-) => Promise<{ status: boolean; message: string }>
-type useSignUpType = {
-  signUp: signUpType
-  verifyEmail: verifyEmailType
-  validate: validateType
-  validationState: validationStateType
-  signingUp: boolean
-  verifyingEmail: boolean
-}
-
-type verifyEmail = {
-  email: string
-  confirmationCode: string
-}
-
-const validations: Record<string, RegExp | Function> = {
-  firstname: /^.{2,}$/,
-  lastname: /^.{1,}$/,
-  email: /^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/,
-  password: /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}[\]:;<>,.?~\\-]).{8,}$/,
-  confirmPassword: (password: string, confirmPassword: string) => {
-    return password === confirmPassword
-  }
-}
+import {
+  SignInRequestBody,
+  SignUpRequestBody,
+  signInType,
+  signUpType,
+  useSignUpType,
+  verifyEmail,
+  verifyEmailType
+} from './types'
 
 const useSignUp: () => useSignUpType = () => {
   const [signingUp, setSigningUp] = useState<boolean>(false)
+  const [signingIn, setSigningIn] = useState<boolean>(false)
   const [verifyingEmail, setVerifyingEmail] = useState<boolean>(false)
-  const { validate, validationState } = useValidate(validations)
   const signUp: signUpType = async (data: SignUpRequestBody) => {
     try {
       setSigningUp(true)
       const body: SignUpRequestBody = {
         ...data
       }
-      const response = await axiosInstance.post('auth/sign-up', body, {
-        timeout: 10000
-      })
+      const response = await axiosInstance.post('auth/sign-up', body)
       console.log('response', response)
       if (response?.status === 200 || response?.status === 201)
         return { status: true, message: response?.data.message }
@@ -68,15 +34,13 @@ const useSignUp: () => useSignUpType = () => {
     }
   }
 
-  const verifyEmail: verifyEmailType = async (data: verifyEmail) => {
+  const verifyEmailAsync: verifyEmailType = async (data: verifyEmail) => {
     try {
       setVerifyingEmail(true)
       const body: verifyEmail = {
         ...data
       }
-      const response = await axiosInstance.post('auth/confirm-sign-up', body, {
-        timeout: 10000
-      })
+      const response = await axiosInstance.post('auth/confirm-sign-up', body)
       console.log('response', response)
       if (response?.status === 200 || response?.status === 201)
         return { status: true, message: response?.data.message }
@@ -90,12 +54,32 @@ const useSignUp: () => useSignUpType = () => {
     }
   }
 
+  const signIn: signInType = async (data: SignInRequestBody) => {
+    try {
+      setSigningIn(true)
+      const body: SignInRequestBody = {
+        ...data
+      }
+      const response = await axiosInstance.post('auth/sign-in', body)
+      console.log('response', response)
+      if (response?.status === 200 || response?.status === 201)
+        return { status: true, message: response?.data.message }
+      return { status: false, message: 'failed' }
+    } catch (error) {
+      setSigningIn(false)
+      console.error(error)
+      return { status: false, message: 'failed' }
+    } finally {
+      setSigningIn(false)
+    }
+  }
+
   return {
     signUp,
-    validate,
-    validationState,
+    signIn,
+    verifyEmailAsync,
     signingUp,
-    verifyEmail,
+    signingIn,
     verifyingEmail
   }
 }

@@ -1,19 +1,9 @@
 import { useState } from 'react'
-import { formValidationType } from '../../components/login/loginInterfaces'
-
-export type validationStateType = { [key: string]: formValidationType }
-export type validateType = (
-  key: string,
-  value: string,
-  message: string,
-  password?: string,
-  confirmPassword?: string
-) => void
-export type fieldsType = Record<string, RegExp | Function>
-type useValidateType = {
-  validate: validateType
-  validationState: validationStateType
-}
+import {
+  fieldsType,
+  useValidateType,
+  validationStateType
+} from '../login/types'
 
 const useValidate = (fields: fieldsType): useValidateType => {
   const validationFields: string[] = Object.keys(fields)

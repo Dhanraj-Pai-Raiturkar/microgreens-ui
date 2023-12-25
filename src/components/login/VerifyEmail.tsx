@@ -29,7 +29,7 @@ const VerifyEmail: React.FC<VerifyEmailInterface> = props => {
   const { email, showModal, login, toggleModal } = props
   const [verificationCode, setVerificationCode] = useState<string>('')
   const [error, setError] = useState<boolean>(false)
-  const { verifyEmail, verifyingEmail } = useSignUp()
+  const { verifyEmailAsync, verifyingEmail } = useSignUp()
 
   const handleSubmit: (e: SyntheticEvent) => Promise<void> = async (
     e: SyntheticEvent
@@ -40,7 +40,7 @@ const VerifyEmail: React.FC<VerifyEmailInterface> = props => {
         email,
         confirmationCode: verificationCode
       }
-      const response = await verifyEmail(payload)
+      const response = await verifyEmailAsync(payload)
       if (!response?.status) setError(true)
       else setError(false)
     } catch (err) {
