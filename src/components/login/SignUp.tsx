@@ -20,7 +20,8 @@ import {
   RadioGroupStyles,
   SignUpButtonStyles,
   TextFieldStyles,
-  ToggleButtonStyles
+  ToggleButtonStyles,
+  loginHeaderStryles
 } from './styles'
 import useSignUp from '../../hooks/login/useSignup'
 import { SignUpForm, SignUpProps } from './types'
@@ -32,7 +33,7 @@ import useValidate from '../../hooks/validation/useValidate'
 
 const SignUp: React.FC<SignUpProps> = props => {
   const { toggleSignup } = props
-  const [disableSubmit, setDisableSubmit] = useState(false)
+  const [disableSubmit, setDisableSubmit] = useState(true)
   const [showModal, setShowModal] = useState<boolean>(false)
   const [signupForm, setSignupForm] = useState<SignUpForm>({
     firstname: '',
@@ -131,6 +132,7 @@ const SignUp: React.FC<SignUpProps> = props => {
   return (
     <Grid
       width={'100%'}
+      height={'100%'}
       display={'flex'}
       flexDirection={'column'}
       alignItems={'center'}
@@ -145,6 +147,20 @@ const SignUp: React.FC<SignUpProps> = props => {
       <Card sx={CardStyles}>
         <CardMedia image={'/login_banner.png'} sx={CardMediaStyles} />
         <CardContent sx={CardContentStyles}>
+          <Typography
+            sx={{ ...loginHeaderStryles, mb: 0 }}
+            color={'primary.dark'}
+            variant="h5"
+          >
+            Join the microgreens family
+          </Typography>
+          <Typography
+            sx={{ ...loginHeaderStryles, mt: 0 }}
+            color={'primary.dark'}
+            variant="h6"
+          >
+            Sign up now!
+          </Typography>
           <form style={{ width: '100%' }} onSubmit={e => handleSignUp(e)}>
             <FormControl fullWidth>
               <TextField

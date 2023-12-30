@@ -2,7 +2,7 @@ import {
   Button,
   Card,
   CardContent,
-  CardMedia,
+  // CardMedia,
   CircularProgress,
   FormControl,
   Grid,
@@ -15,7 +15,8 @@ import {
   CardStyles,
   SignUpButtonStyles,
   TextFieldStyles,
-  ToggleButtonStyles
+  ToggleButtonStyles,
+  loginHeaderStryles
 } from './styles'
 import { SignInProps } from './types'
 import updateFormInput from '../../utils/updateFormInput'
@@ -34,7 +35,7 @@ const SignIn: React.FC<SignUpProps> = props => {
     error: false,
     message: ''
   })
-  const [disableSubmit, setDisableSubmit] = useState(false)
+  const [disableSubmit, setDisableSubmit] = useState(true)
   const [loginForm, setLoginForm] = useState<SignInProps>({
     email: '',
     password: ''
@@ -90,22 +91,30 @@ const SignIn: React.FC<SignUpProps> = props => {
   }, [validationState])
   return (
     <Grid
+      height={'100%'}
       width={'100%'}
       display={'flex'}
       flexDirection={'column'}
       alignItems={'center'}
       justifyContent={'center'}
     >
-      <Card sx={CardStyles}>
-        <CardMedia
+      <Card sx={{ ...CardStyles }}>
+        {/* <CardMedia
           image={'/login_banner.png'}
           sx={{
             height: 160,
             mb: '1rem',
             backgroundPosition: 'center'
           }}
-        />
+        /> */}
         <CardContent sx={CardContentStyles}>
+          <Typography
+            sx={loginHeaderStryles}
+            color={'primary.dark'}
+            variant="h5"
+          >
+            Welcome
+          </Typography>
           <form onSubmit={e => handleSignIn(e)}>
             <FormControl fullWidth>
               <TextField
