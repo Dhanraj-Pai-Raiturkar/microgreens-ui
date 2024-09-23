@@ -33,7 +33,6 @@ import handleDisableSignup from '../../utils/disableSubmitForm'
 import useValidate from '../../hooks/validation/useValidate'
 
 const SignUp: React.FC = () => {
-  // const { toggleSignup } = props
   const [disableSubmit, setDisableSubmit] = useState(true)
   const [showModal, setShowModal] = useState<boolean>(false)
   const [signupForm, setSignupForm] = useState<SignUpForm>({
@@ -109,7 +108,8 @@ const SignUp: React.FC = () => {
     try {
       e.preventDefault()
       const payload: SignUpRequestBody = {
-        name: `${signupForm?.firstname?.trim()} ${signupForm?.lastname?.trim()}`,
+        firstName: signupForm?.firstname?.trim(),
+        lastName: signupForm?.lastname?.trim(),
         email: signupForm?.email,
         gender: signupForm?.gender,
         password: signupForm?.password

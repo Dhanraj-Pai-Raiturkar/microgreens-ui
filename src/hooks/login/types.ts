@@ -1,7 +1,8 @@
 import { formValidationType } from '../../components/login/types'
 
 export interface SignUpRequestBody {
-  name: string
+  firstName: string
+  lastName: string
   gender: string
   email: string
   password: string
@@ -21,9 +22,13 @@ export type signInType = (
 export type verifyEmailType = (
   data: verifyEmail
 ) => Promise<{ status: boolean; message: string }>
+export type resendOtpType = (
+  email: string
+) => Promise<{ status: boolean; message: string }>
 export type useSignUpType = {
   signUp: signUpType
   verifyEmailAsync: verifyEmailType
+  triggerResendOtp: resendOtpType
   signingUp: boolean
   verifyingEmail: boolean
   signIn: signInType

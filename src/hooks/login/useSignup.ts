@@ -3,6 +3,7 @@ import axiosInstance from '../../utils/axiosInstance'
 import {
   SignInRequestBody,
   SignUpRequestBody,
+  resendOtpType,
   signInType,
   signUpType,
   useSignUpType,
@@ -54,6 +55,21 @@ const useSignUp: () => useSignUpType = () => {
     }
   }
 
+  const triggerResendOtp: resendOtpType = async (email: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `auth/resend-confirm?email=${email}`
+      )
+      console.log('response', response)
+      if (response?.status === 200 || response?.status === 201)
+        return { status: true, message: response?.data.message }
+      return { status: false, message: 'failed' }
+    } catch (error) {
+      console.error(error)
+      return { status: false, message: 'failed' }
+    }
+  }
+
   const signIn: signInType = async (data: SignInRequestBody) => {
     try {
       setSigningIn(true)
@@ -78,6 +94,7 @@ const useSignUp: () => useSignUpType = () => {
     signUp,
     signIn,
     verifyEmailAsync,
+    triggerResendOtp,
     signingUp,
     signingIn,
     verifyingEmail
