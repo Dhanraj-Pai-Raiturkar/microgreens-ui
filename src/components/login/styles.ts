@@ -1,9 +1,10 @@
 import { SxProps } from '@mui/material'
 
 const CardStyles: SxProps = {
-  width: { xs: '80%', sm: '60%', md: '50%', lg: '25%', xl: '25%' },
+  width: { xs: '80%', sm: '50%', md: '35%', lg: '20%', xl: '20%' },
   borderRadius: 2,
-  height: { xl: '70%', lg: '80%', md: '65%', sm: '50%', xs: '80vh' },
+  // height: { xl: '70%', lg: '80%', md: '65%', sm: '50%', xs: '80vh' },
+  height: '100%',
   display: 'flex',
   flexDirection: 'column',
   overflowY: 'auto',
@@ -16,7 +17,11 @@ const CardMediaStyles: SxProps = {
   backgroundPosition: 'center'
 }
 const loginHeaderStryles: SxProps = { fontWeight: '600', my: '2rem' }
-const CardContentStyles: SxProps = { display: 'flex', flexDirection: 'column' }
+const CardContentStyles: SxProps = {
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%'
+}
 const TextFieldStyles: SxProps = { mb: '1.5rem', fontSize: '0.1rem' }
 const RadioGroupStyles: SxProps = {
   display: 'flex',

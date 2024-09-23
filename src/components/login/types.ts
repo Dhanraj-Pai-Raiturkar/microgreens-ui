@@ -1,5 +1,5 @@
 export interface SignUpProps {
-  toggleSignup: Function
+  toggleSignup?: Function
 }
 
 export interface SignUpForm {

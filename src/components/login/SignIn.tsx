@@ -10,6 +10,7 @@ import {
   Typography
 } from '@mui/material'
 import React, { SyntheticEvent, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   CardContentStyles,
   CardStyles,
@@ -25,12 +26,12 @@ import useSignUp from '../../hooks/login/useSignup'
 import { SignInRequestBody } from '../../hooks/login/types'
 import useValidate from '../../hooks/validation/useValidate'
 
-interface SignUpProps {
-  toggleSignup: Function
-}
+// interface SignUpProps {
+//   toggleSignup: Function
+// }
 
-const SignIn: React.FC<SignUpProps> = props => {
-  const { toggleSignup } = props
+const SignIn: React.FC = () => {
+  // const { toggleSignup } = props
   const [error, setError] = useState({
     error: false,
     message: ''
@@ -97,16 +98,9 @@ const SignIn: React.FC<SignUpProps> = props => {
       flexDirection={'column'}
       alignItems={'center'}
       justifyContent={'center'}
+      py={2}
     >
-      <Card sx={{ ...CardStyles }}>
-        {/* <CardMedia
-          image={'/login_banner.png'}
-          sx={{
-            height: 160,
-            mb: '1rem',
-            backgroundPosition: 'center'
-          }}
-        /> */}
+      <Card sx={{ ...CardStyles, height: 'auto' }}>
         <CardContent sx={CardContentStyles}>
           <Typography
             sx={loginHeaderStryles}
@@ -173,20 +167,22 @@ const SignIn: React.FC<SignUpProps> = props => {
           </form>
         </CardContent>
       </Card>
-      <Button
-        onClick={() => toggleSignup((prev: Boolean) => !prev)}
-        variant="text"
-        disableTouchRipple
-        sx={ToggleButtonStyles}
-      >
-        {
-          <>
-            Dont have an account?
-            <br />
-            Sign Up here
-          </>
-        }
-      </Button>
+      <Link to="/register">
+        <Button
+          // onClick={() => toggleSignup((prev: Boolean) => !prev)}
+          variant="text"
+          disableTouchRipple
+          sx={ToggleButtonStyles}
+        >
+          {
+            <>
+              Dont have an account?
+              <br />
+              Sign Up here
+            </>
+          }
+        </Button>
+      </Link>
     </Grid>
   )
 }

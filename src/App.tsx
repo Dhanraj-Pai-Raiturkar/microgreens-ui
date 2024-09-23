@@ -1,10 +1,24 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Grid } from '@mui/material'
-import SignUp from './components/login/SignUp'
 import SignIn from './components/login/SignIn'
+import SignUp from './components/login/SignUp'
 
 function App(): React.ReactElement {
-  const [showSignup, setShowSignup] = useState<Boolean>(false)
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <SignIn />
+    },
+    {
+      path: '/register',
+      element: <SignUp />
+    },
+    {
+      path: '/home',
+      element: <div>Home Page</div>
+    }
+  ])
   return (
     <Grid
       width={'100vw'}
@@ -19,11 +33,7 @@ function App(): React.ReactElement {
         }
       }}
     >
-      {showSignup ? (
-        <SignUp toggleSignup={setShowSignup} />
-      ) : (
-        <SignIn toggleSignup={setShowSignup} />
-      )}
+      <RouterProvider router={router} />
     </Grid>
   )
 }

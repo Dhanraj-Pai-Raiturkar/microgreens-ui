@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import React, { SyntheticEvent, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   CardContentStyles,
   CardMediaStyles,
@@ -24,15 +25,15 @@ import {
   loginHeaderStryles
 } from './styles'
 import useSignUp from '../../hooks/login/useSignup'
-import { SignUpForm, SignUpProps } from './types'
+import { SignUpForm } from './types'
 import VerifyEmail from './VerifyEmail'
 import { SignUpRequestBody } from '../../hooks/login/types'
 import updateFormInput from '../../utils/updateFormInput'
 import handleDisableSignup from '../../utils/disableSubmitForm'
 import useValidate from '../../hooks/validation/useValidate'
 
-const SignUp: React.FC<SignUpProps> = props => {
-  const { toggleSignup } = props
+const SignUp: React.FC = () => {
+  // const { toggleSignup } = props
   const [disableSubmit, setDisableSubmit] = useState(true)
   const [showModal, setShowModal] = useState<boolean>(false)
   const [signupForm, setSignupForm] = useState<SignUpForm>({
@@ -122,7 +123,7 @@ const SignUp: React.FC<SignUpProps> = props => {
   }
 
   const handleRedirectToLogin: () => void = () => {
-    toggleSignup((prev: boolean) => !prev)
+    // toggleSignup((prev: boolean) => !prev)
   }
 
   useEffect(() => {
@@ -132,11 +133,12 @@ const SignUp: React.FC<SignUpProps> = props => {
   return (
     <Grid
       width={'100%'}
-      height={'100%'}
+      minHeight={'100%'}
       display={'flex'}
       flexDirection={'column'}
       alignItems={'center'}
       justifyContent={'center'}
+      py={2}
     >
       <VerifyEmail
         login={handleRedirectToLogin}
@@ -144,11 +146,11 @@ const SignUp: React.FC<SignUpProps> = props => {
         email={signupForm?.email}
         toggleModal={setShowModal}
       />
-      <Card sx={CardStyles}>
+      <Card sx={{ ...CardStyles, height: 'auto' }}>
         <CardMedia image={'/login_banner.png'} sx={CardMediaStyles} />
         <CardContent sx={CardContentStyles}>
           <Typography
-            sx={{ ...loginHeaderStryles, mb: 0 }}
+            sx={{ ...loginHeaderStryles, m: 0 }}
             color={'primary.dark'}
             variant="h5"
           >
@@ -294,20 +296,22 @@ const SignUp: React.FC<SignUpProps> = props => {
           </form>
         </CardContent>
       </Card>
-      <Button
-        onClick={() => toggleSignup((prev: Boolean) => !prev)}
-        variant="text"
-        disableTouchRipple
-        sx={ToggleButtonStyles}
-      >
-        {
-          <>
-            Already have an account?
-            <br />
-            Login here
-          </>
-        }
-      </Button>
+      <Link to="/">
+        <Button
+          // onClick={() => toggleSignup((prev: Boolean) => !prev)}
+          variant="text"
+          disableTouchRipple
+          sx={ToggleButtonStyles}
+        >
+          {
+            <>
+              Already have an account?
+              <br />
+              Login here
+            </>
+          }
+        </Button>
+      </Link>
     </Grid>
   )
 }
